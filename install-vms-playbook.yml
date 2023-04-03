@@ -1,0 +1,62 @@
+- hosts: localhost
+  gather_facts: false
+  vars:
+    vm_count: 3
+    vm_name_prefix: ubuntu-20-04
+    vm_memory_mb: 2048
+    vm_disk_gb: 20
+    vm_network_name: "VMnet0"
+    vm_template: "/run/media/oneabove/Data/SRE-Project/VM-Templates-Ansible/UBUNTU-20-04-VM-TEMPLATE/UBUNTU-20-04-VM-TEMPLATE.vmx"
+    vm_admin_username: ansible
+    vm_admin_password: 0000
+    vm_ip_address_prefix: "192.168.1."
+    vm_netmask: "255.255.255.0"
+    vm_gateway: "192.168.1.1"
+  tasks:
+  - name: Create 3 Ubuntu 20.04 VMs
+    vmware_guest:
+      hostname: localhost
+      username: "{{ ansible_user }}"
+      password: "{{ ansible_password }}"
+      validate_certs: no
+      name: "{{ vm_name_prefix }}-{{ item }}"
+      state: poweredoff
+      hardware:
+        memory_mb: "{{ vm_memory_mb }}"
+        num_cpus: 2
+        scsi: paravirtual
+        disk:
+        - size_gb: "{{ vm_disk_gb }}"
+          type: thin
+      networks:
+        - name: "{{ vm_network_name }}"
+          start_connected: yes
+          network_type: vmxnet3
+      template: "{{ vm_template }}"
+      customization:
+        hostname: "{{ vm_name_prefix }}-{{ item }}"
+        timezone: Europe/Bucharest
+        network:
+          interfaces:
+          - ipv4:
+            address: "{{ vm_ip_address_prefix }}{{ item + 100 }}"
+            netmask: "{{ vm_netmask }}"
+            gateway: "{{ vm_gateway }}"
+        users:
+        - name: "{{ vm_admin_username }}"
+          password: "{{ vm_admin_password }}"
+          sudo: ALL=(ALL) NOPASSWD:ALL
+    with_sequence: count="{{ vm_count }}"
+    register: vm_creation_result
+  - name: Check for errors
+    fail:
+      msg: "{{ item.msg }}"
+    when: item.failed == true
+    with_items: "{{ vm_creation_result.results }}"
+    ignore_errors: true
+  - name: Print debug information
+    debug:
+      msg: "{{ item.msg }}"
+    with_items: "{{ vm_creation_result.results }}"
+    verbosity: 2
+    ignore_errors: true
