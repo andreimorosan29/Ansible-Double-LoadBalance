@@ -27,3 +27,5 @@ Changes:
     + Tried to learn and create snapshots for the VM, unfortunately not possible since I don't have vCenter on my poor man's setup
     + Commented potential additions for that
 
+    --TEST
+
