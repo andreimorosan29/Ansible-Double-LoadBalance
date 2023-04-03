@@ -1,0 +1,26 @@
+---
+# Check and Retrieve HTTP URL
+- name: Check and Retrieve HTTP URL
+
+  # Target hosts in the 'vmnet0' group
+  hosts: vmnet0
+
+  # Run tasks as root
+  become: true
+
+  # Use Python 3 interpreter
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+  # Check and Retrieve HTTP URL
+  tasks:
+    - name: Check HTTP URL
+      ansible.builtin.uri:
+        url: http://localhost
+        return_content: true
+      register: http_response
+
+    # Display HTTP response content
+    - name: Display HTTP response content
+      ansible.builtin.debug:
+        var: http_response.content
