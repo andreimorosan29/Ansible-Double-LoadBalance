@@ -1,0 +1,33 @@
+---
+# Restart NGINX service
+- name: Restart NGINX service
+
+  # Target hosts in the 'web' group
+  hosts: vmnet0
+
+  # Gather facts about the host system
+  gather_facts: true
+
+  # Run tasks as root
+  become: true
+
+  # Use Python 3 interpreter
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+  # Restart NGINX service
+  tasks:
+    - name: Restart NGINX service
+      ansible.builtin.systemd:
+        name: nginx
+        state: restarted
+    # Check NGINX status after restart
+    - name: Check NGINX status
+      ansible.builtin.systemd:
+        name: nginx
+        state: started
+      register: nginx_status
+    # Display NGINX status
+    - name: Display NGINX status
+      ansible.builtin.debug:
+        var: nginx_status
