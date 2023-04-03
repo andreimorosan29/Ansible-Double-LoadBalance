@@ -1,0 +1,31 @@
+---
+# Install NGINX on VMs
+- name: Install NGINX on VMs
+
+  # Target hosts in the 'vmnet0' group
+  hosts: vmnet0
+
+  # Gather facts about the host system
+  gather_facts: true
+
+  # Run tasks as root
+  become: true
+
+  # Use Python 3 interpreter
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+  # Install NGINX
+  tasks:
+    - name: Install NGINX
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+
+  # Notify handler to start NGINX service
+  handlers:
+    - name: Start NGINX
+      ansible.builtin.systemd:
+        name: nginx
+        state: started
+        enabled: true

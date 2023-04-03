@@ -1,0 +1,29 @@
+---
+# Check NGINX status on VMs in vmnet0
+- name: Check NGINX status on VMs in vmnet0
+
+  # Target hosts in the 'vmnet0' group
+  hosts: vmnet0
+
+  # Gather facts about the host system
+  gather_facts: true
+
+  # Run tasks as root
+  become: true
+
+  # Use Python 3 interpreter
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+  # Check NGINX status
+  tasks:
+    - name: Check NGINX status
+      ansible.builtin.systemd:
+        name: nginx
+        state: started
+      register: nginx_status
+
+    # Print status of NGINX service
+    - name: Print NGINX status
+      ansible.builtin.debug:
+        var: nginx_status
