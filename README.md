@@ -6,8 +6,6 @@ How to create an Ansible Playbook for Load Balancing 2 VMs in replication.
 TODO:
 
 1. Ansible Playbook to install 3 Ubuntu 20.04 VMs.
-    + Created the playbook
-    - Deleted playbook - it's a bit too complicated we'll circle around it later
 2. Ansible Playbook for VMs initialization.
 3. Ansible Playbook - Install & Configure NGINX
 4. Ansible Playbook - Install & Configure NFS
@@ -25,4 +23,6 @@ Changes:
 
     To run the playbook: 
     sudo ansible-playbook -i inventory.ini update-upgrade-vms.yml --extra-vars "ansible_sudo_pass=0000"
+    + Added reboot after upgrade in the update-upgrade-vms.yml
+    
 
