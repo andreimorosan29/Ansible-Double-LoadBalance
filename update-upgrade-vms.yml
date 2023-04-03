@@ -1,20 +1,41 @@
+---
+# Create First Playbook to Update/Upgrade VMs
 - name: Update Ubuntu on VMWare Workstation 16
+  # Use inventory hosts provided in inventory.ini
   hosts: vmnet0
+  # Directive to run tasks as root
   become: true
+  # Gather facts about the host machine
   gather_facts: true
+  # Use Python 3 as interpreter for the playbook
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  # List the tasks to be performed
   tasks:
+    # Update the APT cache
     - name: Update APT Cache
       ansible.builtin.apt:
         update_cache: true
+    # Upgrade packages    
     - name: Upgrade Packages
       ansible.builtin.apt:
         upgrade: true
         autoremove: true
+      # Create notifier to see if changes were made to reboot
       notify:
         - Reboot VMs
+      # - Create VM Snapshot
   handlers:
     - name: Reboot VMs
       ansible.builtin.reboot:
         reboot_timeout: 300
         post_reboot_delay: 30
-      when: upgrade_result.changed
+# Create VM Snapshot - Unfortunately too poor for vCenter :(
+# - name: Create VM Snapshot
+# community.vmware.vmware_vm_shell:
+#    hostname: "{{ ansible_host }}"
+#    username: "{{ vmware_user }}"
+#    password: "{{ vmware_password }}"
+#    vm_id: "{{ inventory_hostname }}"
+#    vmware_shell: "snapshot.take --name 'Snapshot-v1-Updates-and-Upgrades'"
+# when: "'Reboot VMs' in ansible_playbook_all_handlers"

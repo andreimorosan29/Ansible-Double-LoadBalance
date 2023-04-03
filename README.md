@@ -24,5 +24,6 @@ Changes:
     To run the playbook: 
     sudo ansible-playbook -i inventory.ini update-upgrade-vms.yml --extra-vars "ansible_sudo_pass=0000"
     + Added reboot after upgrade in the update-upgrade-vms.yml
-    
+    + Tried to learn and create snapshots for the VM, unfortunately not possible since I don't have vCenter on my poor man's setup
+    + Commented potential additions for that
 
