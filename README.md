@@ -29,3 +29,4 @@ Changes:
 
     + Created Install NGINX Playbook for all VMs
     + Created Check NGINX Status Playbook for all VMs
+    + Created Restart NGINX for all VMs
