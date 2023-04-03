@@ -1,0 +1,21 @@
+---
+- name: Stop NGINX Service
+  # The inventory group of VMs to target
+  hosts: vmnet0
+  # Run tasks as the root user
+  become: true
+  tasks:
+    - name: Stop NGINX service
+      # Use the systemd module to manage services
+      ansible.builtin.systemd:
+        name: nginx
+        # Set the state of the service to 'stopped'
+        state: stopped
+        # Save the output of this task in a variable called nginx_service
+      register: nginx_service
+  handlers:
+    - name: Check NGINX service status
+      # Use the command module to run the 'systemctl status nginx' command
+      ansible.builtin.command: systemctl status nginx
+      # Only run this task if the previous task changed the state of the service
+      when: nginx_service.changed

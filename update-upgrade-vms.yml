@@ -16,7 +16,7 @@
     - name: Update APT Cache
       ansible.builtin.apt:
         update_cache: true
-    # Upgrade packages    
+    # Upgrade packages
     - name: Upgrade Packages
       ansible.builtin.apt:
         upgrade: true

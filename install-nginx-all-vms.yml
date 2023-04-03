@@ -21,7 +21,7 @@
       ansible.builtin.apt:
         name: nginx
         state: present
-
+      notify: Start NGINX
   # Notify handler to start NGINX service
   handlers:
     - name: Start NGINX

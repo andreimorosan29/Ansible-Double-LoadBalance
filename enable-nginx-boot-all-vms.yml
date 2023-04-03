@@ -1,0 +1,19 @@
+---
+# Playbook for enabling NGINX to run at startup all VMs
+- name: Enable NGINX to run at startup
+  # The inventory group of VMs to target
+  hosts: vmnet0
+  # Run tasks as the root user
+  become: true
+  tasks:
+    - name: Enable NGINX service
+      # Use the systemd module to manage services
+      ansible.builtin.systemd:
+        name: nginx
+        # Enable the service to run at startup
+        enabled: true
+      register: nginx_service
+    - name: Check NGINX service status
+      # Use the command module to run the 'systemctl status nginx' command
+      ansible.builtin.command: systemctl status nginx
+      when: nginx_service.changed

@@ -19,7 +19,6 @@
         url: http://localhost
         return_content: true
       register: http_response
-
     # Display HTTP response content
     - name: Display HTTP response content
       ansible.builtin.debug:
