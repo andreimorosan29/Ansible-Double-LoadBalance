@@ -10,7 +10,11 @@
       ansible.builtin.apt:
         upgrade: true
         autoremove: true
+      notify:
+        - Reboot VMs
+  handlers:
     - name: Reboot VMs
       ansible.builtin.reboot:
         reboot_timeout: 300
         post_reboot_delay: 30
+      when: upgrade_result.changed
