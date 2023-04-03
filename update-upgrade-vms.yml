@@ -1,0 +1,12 @@
+- name: Update Ubuntu on VMWare Workstation 16
+  hosts: vmnet0
+  become: true
+  gather_facts: true
+  tasks:
+    - name: Update APT Cache
+      ansible.builtin.apt:
+        update_cache: true
+    - name: Upgrade Packages
+      ansible.builtin.apt:
+        upgrade: true
+        autoremove: true

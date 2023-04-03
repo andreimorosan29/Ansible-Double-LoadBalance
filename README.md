@@ -7,6 +7,7 @@ TODO:
 
 1. Ansible Playbook to install 3 Ubuntu 20.04 VMs.
     + Created the playbook
+    - Deleted playbook - it's a bit too complicated we'll circle around it later
 2. Ansible Playbook for VMs initialization.
 3. Ansible Playbook - Install & Configure NGINX
 4. Ansible Playbook - Install & Configure NFS
@@ -14,4 +15,14 @@ TODO:
 6. Ansible Playbook - Configure MariaDB Master VM
 7. Ansible Playbook - Configure MariaDB Slave VM
 8. Ansible Playbook - Configure NGINX Load Balancer VM
+
+Changes:
+1. Created install-vms-playbook.yml
+2. Deleted the install-vms-playbook.yml - for now as it is a bit hard and we'll circle back around it later
+3. Created:
+    + update-upgrade-vms.yml --runs updates and upgrades on the VMs
+    + inventory.ini --contains the information for the target VMs
+
+    To run the playbook: 
+    sudo ansible-playbook -i inventory.ini update-upgrade-vms.yml --extra-vars "ansible_sudo_pass=0000"
 
