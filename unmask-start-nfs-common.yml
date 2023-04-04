@@ -1,0 +1,40 @@
+- name: Unmask and Start NFS Common on client
+  hosts: vmnet0
+  become: true
+
+  tasks:
+    ##
+    # Check link to dev null
+    ##
+    - name: Check if link to dev null exists
+      ansible.builtin.stat:
+        path: "/lib/systemd/system/nfs-common.service"
+      register: file_data
+      when: inventory_hostname == "vm-slave"
+    ##
+    # Delete link to dev null
+    ##
+    - name: Delete link to dev null
+      ansible.builtin.file:
+        state: absent
+        path: /lib/systemd/system/nfs-common.service
+      when:
+        - inventory_hostname == "vm-slave"
+        - file_data.stat.exists
+      register: file_data
+    ##
+    # Reload systemd daemon
+    ##
+    - name: Reload systemd daemon
+      ansible.builtin.command: sudo systemctl daemon-reload
+      register: result_reload_systemd_daemon
+      changed_when: result_reload_systemd_daemon.rc != 0
+      when: inventory_hostname == "vm-slave"
+    ##
+    # Start NFS common client
+    ##
+    - name: Start NFS common client
+      ansible.builtin.service:
+        name: nfs-common
+        state: started
+      when: inventory_hostname == "vm-slave"
