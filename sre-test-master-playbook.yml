@@ -1,0 +1,15 @@
+---
+# This will be the master Playbook
+# Here I will import all the other plays in order
+
+- name: Master Playbook
+  hosts: vmnet0
+  become: true
+  gather_facts: true
+  tasks:
+    - name: Include Update and Upgrade Playbook
+      ansible.builtin.include_tasks: update-upgrade-vms.yml
+    - name: Include Install Nginx Playbook
+      ansible.builtin.include_tasks: install-nginx-all-vms.yml
+    - name: Include Install and Configure NFS
+      ansible.builtin.include_tasks: install-nfs-with-shared-folder.yml
