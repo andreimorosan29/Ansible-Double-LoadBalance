@@ -1,0 +1,98 @@
+---
+# Playbook that installs
+# NFS Server in vm-master
+# NFS Client in vm-slave
+# shares a directory from vm-master to vm-slave
+- name: Configure NFS Server and Client
+  hosts: vmnet0
+  become: true
+  vars:
+    shared_directory: /mnt/nfs-test-share
+  tasks:
+    ##
+    # Install NFS Kernel Server
+    ##
+    - name: Install NFS server on vm-master
+      ansible.builtin.apt:
+        name: nfs-kernel-server
+        state: present
+      when:
+        - inventory_hostname == 'vm-master'
+        - not ansible_check_mode
+    ##
+    # Install NFS Common
+    ##
+    - name: Install NFS common on vm-slave
+      ansible.builtin.apt:
+        name: nfs-common
+        state: present
+      when:
+        - inventory_hostname == "vm-slave"
+        - not ansible_check_mode
+    ##
+    # Create shared directory on server
+    ##
+    - name: Create shared directory on vm-master
+      ansible.builtin.file:
+        path: "{{ shared_directory }}"
+        state: directory
+        mode: '0777'
+      when: inventory_hostname == "vm-master"
+    ##
+    # Set shared directory on server owner to nobody:nogroup
+    ##
+    - name: Set owner to nobody for shared folder
+      when: inventory_hostname == "vm-master"
+      ansible.builtin.command: sudo chown nobody:nogroup {{ shared_directory }}
+      register: result_changed_owner
+      changed_when: result_changed_owner != 0
+    ##
+    ##
+    # Export shared directory on vm-master
+    ##
+    - name: Export shared directory on vm-master
+      ansible.builtin.lineinfile:
+        path: /etc/exports
+        line: "{{ shared_directory }} *(rw,sync,no_subtree_check)"
+      when: inventory_hostname == "vm-master"
+    ##
+    # Restart NFS Server
+    ##
+    - name: Restart NFS server on vm-master
+      when: inventory_hostname == "vm-master"
+      ansible.builtin.service:
+        name: nfs-kernel-server
+        state: restarted
+    ##
+    # Create shared directory on slave
+    ##
+    - name: Create shared directory on vm-slave
+      ansible.builtin.file:
+        path: "{{ shared_directory }}"
+        state: directory
+        mode: '0777'
+      when: inventory_hostname == "vm-slave"
+    ##
+    # Mount shared directory on slave
+    ##
+    - name: Mount shared directory on vm-slave
+      ansible.posix.mount:
+        path: "{{ shared_directory }}"
+        ##TODO - try to not make it hardcoded
+        src: "192.168.1.142:{{ shared_directory }}" 
+        fstype: nfs
+        opts: "rw,sync"
+        state: mounted
+      register: mount_result
+      notify: Check NFS Mount
+      when: inventory_hostname == "vm-slave"
+  handlers:
+    - name: Restart NFS
+      when: inventory_hostname == "vm-master"
+      ansible.builtin.systemd:
+        name: nfs-kernel-server
+        state: restarted
+    - name: Check NFS Mount
+      when: inventory_hostname == "vm-slave"
+      ansible.builtin.debug:
+        msg: "NFS mount succesful on {{ inventory_hostname }}"
