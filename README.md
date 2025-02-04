@@ -9,23 +9,6 @@ System Updates & Upgrades: Applies security patches and updates packages.
 Nginx Web Server: Installs and configures Nginx as a reverse proxy.
 
 NFS Shared Storage: Sets up centralized file sharing across servers.
-
-#### 🛠 Playbook Structure
-<code>
-- name: Master Playbook
-  hosts: vmnet0           # Target server group
-  become: true            # Execute tasks with sudo privileges
-  gather_facts: true      # Collect system information pre-execution
-  tasks:
-    - name: Include Update and Upgrade Playbook
-      ansible.builtin.include_tasks: update-upgrade-vms.yml
-
-    - name: Include Install Nginx Playbook
-      ansible.builtin.include_tasks: install-nginx-all-vms.yml
-
-    - name: Include Install and Configure NFS
-      ansible.builtin.include_tasks: install-nfs-with-shared-folder.yml
-</code>
       
 #### 📦 Prerequisites
 Ansible 2.10+
