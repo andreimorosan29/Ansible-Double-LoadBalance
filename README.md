@@ -11,8 +11,7 @@ Nginx Web Server: Installs and configures Nginx as a reverse proxy.
 NFS Shared Storage: Sets up centralized file sharing across servers.
 
 #### 🛠 Playbook Structure
-yaml
-Copy
+<code>
 - name: Master Playbook
   hosts: vmnet0           # Target server group
   become: true            # Execute tasks with sudo privileges
@@ -26,6 +25,8 @@ Copy
 
     - name: Include Install and Configure NFS
       ansible.builtin.include_tasks: install-nfs-with-shared-folder.yml
+</code>
+      
 #### 📦 Prerequisites
 Ansible 2.10+
 
