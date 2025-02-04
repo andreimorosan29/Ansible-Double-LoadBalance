@@ -1,32 +1,80 @@
-# Ansible-Double-LoadBalance
-How to create an Ansible Playbook for Load Balancing 2 VMs in replication.
+## Automated Server Configuration with Ansible
+Infrastructure as Code (IaC) for System Updates, Nginx, and NFS Deployment
 
-1. Testing the initial commit - Hello world!
+This master playbook automates server provisioning for the vmnet0 host group, ensuring consistent environments across development and production systems.
 
-TODO:
+#### 🚀 Features
+System Updates & Upgrades: Applies security patches and updates packages.
 
-1. Ansible Playbook to install 3 Ubuntu 20.04 VMs.
-2. Ansible Playbook for VMs initialization.
-3. Ansible Playbook - Install & Configure NGINX
-4. Ansible Playbook - Install & Configure NFS
-5. Ansible Playbook - Install MariaDB
-6. Ansible Playbook - Configure MariaDB Master VM
-7. Ansible Playbook - Configure MariaDB Slave VM
-8. Ansible Playbook - Configure NGINX Load Balancer VM
+Nginx Web Server: Installs and configures Nginx as a reverse proxy.
 
-Changes:
-1. Created install-vms-playbook.yml
-2. Deleted the install-vms-playbook.yml - for now as it is a bit hard and we'll circle back around it later
-3. Created:
-    + update-upgrade-vms.yml --runs updates and upgrades on the VMs
-    + inventory.ini --contains the information for the target VMs
+NFS Shared Storage: Sets up centralized file sharing across servers.
 
-    To run the playbook: 
-    sudo ansible-playbook -i inventory.ini update-upgrade-vms.yml --extra-vars "ansible_sudo_pass=0000"
-    + Added reboot after upgrade in the update-upgrade-vms.yml
-    + Tried to learn and create snapshots for the VM, unfortunately not possible since I don't have vCenter on my poor man's setup
-    + Commented potential additions for a snapshot update
+#### 🛠 Playbook Structure
+yaml
+Copy
+- name: Master Playbook
+  hosts: vmnet0           # Target server group
+  become: true            # Execute tasks with sudo privileges
+  gather_facts: true      # Collect system information pre-execution
+  tasks:
+    - name: Include Update and Upgrade Playbook
+      ansible.builtin.include_tasks: update-upgrade-vms.yml
 
-    + Created Install NGINX Playbook for all VMs
-    + Created Check NGINX Status Playbook for all VMs
-    + Created Restart NGINX for all VMs
+    - name: Include Install Nginx Playbook
+      ansible.builtin.include_tasks: install-nginx-all-vms.yml
+
+    - name: Include Install and Configure NFS
+      ansible.builtin.include_tasks: install-nfs-with-shared-folder.yml
+#### 📦 Prerequisites
+Ansible 2.10+
+
+SSH access to target servers in vmnet0 group
+
+Sudo privileges on target machines
+
+#### ⚙️ Usage
+Clone this repository:
+
+
+Copy
+<code>git clone https://github.com/your-username/ansible-server-config.git</code> <br>
+Update inventory.ini with your server IPs/hostnames.
+
+Run the playbook:
+
+
+Copy
+<code>ansible-playbook -i inventory.ini master-playbook.yml</code>  
+
+#### 🌟 Key Technical Details
+Aspect	Implementation
+Modularity	Reusable subtasks via include_tasks
+Security	Privilege escalation with become: true
+Idempotency	Safe for repeated runs (no unintended changes)
+Shared Storage	NFS configuration for cross-server collaboration
+
+#### 💡 Why This Matters
+Infrastructure as Code (IaC): Eliminates manual server setup errors.
+
+DevOps Best Practices: Demonstrates automation, consistency, and scalability.
+
+Enterprise Use Cases:
+
+Rapid deployment of web servers (Nginx)
+
+Secure shared storage for logs/data (NFS)
+
+System hardening through automated updates
+
+#### 📂 Included Task Files
+update-upgrade-vms.yml: Handles package updates and cache cleanup.
+
+install-nginx-all-vms.yml: Deploys Nginx and ensures service persistence.
+
+install-nfs-with-shared-folder.yml: Configures NFS server/client roles and shared directories.
+
+#### 📝 Contribution & Feedback
+Contributions welcome! Open an Issue for bug reports or a Pull Request for improvements.
+
+License: MIT
